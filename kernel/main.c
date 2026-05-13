@@ -27,6 +27,7 @@ main()
     binit();         // buffer cache
     iinit();         // inode table
     fileinit();      // file table
+    lcg_init();      // random number generator
     virtio_disk_init(); // emulated hard disk
     userinit();      // first user process
     __sync_synchronize();
