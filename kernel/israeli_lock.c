@@ -8,7 +8,7 @@
 #include "proc.h"
 #include "defs.h"
 
-#define NLOCKS 10
+#define NLOCKS 15
 #define NQUEUE 16
 #define NGROUPS 8
 
