@@ -124,6 +124,13 @@ void            releasesleep(struct sleeplock*);
 int             holdingsleep(struct sleeplock*);
 void            initsleeplock(struct sleeplock*, char*);
 
+//israeli_lock.c
+void            israeli_lock_init(void);
+int             israeli_create(int favoritism);
+int             israeli_acquire(int lock_id);
+int             israeli_release(int lock_id);
+int             israeli_destroy(int lock_id);
+
 // string.c
 int             memcmp(const void*, const void*, uint);
 void*           memmove(void*, const void*, uint);

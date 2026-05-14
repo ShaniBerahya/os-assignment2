@@ -14,7 +14,7 @@ sub entry {
     print " ecall\n";
     print " ret\n";
 }
-	
+
 entry("fork");
 entry("exit");
 entry("wait");
@@ -38,3 +38,9 @@ entry("sleep");
 entry("uptime");
 entry("lcg_srand");
 entry("lcg_rand");
+entry("setgid");
+entry("getgid");
+entry("israeli_create");
+entry("israeli_acquire");
+entry("israeli_release");
+entry("israeli_destroy");
