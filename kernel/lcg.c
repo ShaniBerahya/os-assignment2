@@ -1,6 +1,9 @@
 #include "types.h"
-#include "defs.h"
+#include "param.h"
+#include "memlayout.h"
+#include "riscv.h"
 #include "spinlock.h"
+#include "defs.h"
 
 static uint lcg_state;
 static struct spinlock lcg_lock;
