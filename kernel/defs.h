@@ -188,7 +188,7 @@ void            virtio_disk_intr(void);
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
 
-// sysproc.c
+// lcg.c
 void            lcg_init(void);
 void            lcg_srand(uint);
 uint            lcg_rand(void);
