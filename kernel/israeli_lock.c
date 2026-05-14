@@ -40,6 +40,8 @@ void israeli_lock_init(void) {
 }
 
 int israeli_create(int favoritism) {
+    if (favoritism < 0 || favoritism > 100)
+        return -1; // Invalid favoritism value
     // Find an unused lock and initialize it
     for (int i = 0; i < NLOCKS; i++) {
         acquire(&locks[i].lk);
