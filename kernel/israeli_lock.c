@@ -10,7 +10,10 @@
 
 #define NLOCKS 10
 #define NQUEUE 16
+#define NGROUPS 8
 
+
+/// Israeli lock ///
 struct israeli_lock {
     int used;
     int locked; // 0->unlocked, 1->locked
@@ -155,3 +158,83 @@ int israeli_destroy(int lock_id) {
 }
 
 
+/// Race - Team score management ///
+// This structure and functions manage team scores based on the Israeli lock ownership
+struct race {
+    int scores[NGROUPS];
+    int isr_lk_id; // Associated Israeli lock ID
+    int finished;
+    int winner;
+    int target_score;
+};
+
+static struct race race;
+
+int team_score_init(int isr_lk_id, int target_score) {
+    if (isr_lk_id < 0 || isr_lk_id >= NLOCKS)
+        return -1 ; // Invalid lock ID
+    race.isr_lk_id = isr_lk_id;
+    race.finished = 0;
+    race.winner = -1;
+    race.target_score = target_score;
+    for (int j = 0; j < NGROUPS; j++) {
+        race.scores[j] = 0;
+    }
+    return 0;
+}
+
+// returns updated score or -1 on error or 0 if race finished
+int team_score_update(int lock_id, int group_id) {
+    if (lock_id < 0 || lock_id >= NLOCKS || group_id < 0 || group_id >= NGROUPS)
+        return -1; // Invalid ID
+
+    struct proc *me = myproc();
+
+    // Check if current process owns the Israeli lock
+    acquire(&locks[lock_id].lk);
+    if (locks[lock_id].owner != me || lock_id != race.isr_lk_id) {
+        release(&locks[lock_id].lk);
+        return -1; // Current process does not own the lock
+    }
+
+    if (race.finished) {
+        release(&locks[lock_id].lk);
+        return 0; //   Race already finished
+    }
+    race.scores[group_id]++;
+    if (race.scores[group_id] >= race.target_score) {
+        race.finished = 1;
+        race.winner = group_id;
+    }
+    int score = race.scores[group_id];
+    release(&locks[lock_id].lk);
+
+    return score;
+}
+
+int team_score_get(int lock_id, int group_id) {
+    if (lock_id < 0 || lock_id >= NLOCKS || group_id < 0 || group_id >= NGROUPS)
+        return -1; // Invalid group ID
+
+    if (lock_id != race.isr_lk_id)
+        return -1; // Wrong race lock ID
+
+    acquire(&locks[lock_id].lk);
+    int score = race.scores[group_id];
+    release(&locks[lock_id].lk);
+
+    return score;
+}
+
+int is_race_finished(int lock_id) {
+    if (lock_id < 0 || lock_id >= NLOCKS)
+        return -1; // Invalid lock ID
+
+    if (lock_id != race.isr_lk_id)
+        return -1; // Wrong race lock ID
+
+    acquire(&locks[lock_id].lk);
+    int finished = race.finished;
+    release(&locks[lock_id].lk);
+    return finished;
+}

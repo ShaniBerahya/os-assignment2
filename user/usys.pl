@@ -44,3 +44,7 @@ entry("israeli_create");
 entry("israeli_acquire");
 entry("israeli_release");
 entry("israeli_destroy");
+entry("team_score_init");
+entry("team_score_update");
+entry("team_score_get");
+entry("is_race_finished");
